@@ -399,6 +399,8 @@ char *find_default_branch(struct cgit_repo *repo)
 	return ref;
 }
 
+extern void cgit_print_cloneurl(struct cgit_context *ctx);
+
 static int prepare_repo_cmd(struct cgit_context *ctx)
 {
 	char *tmp;
@@ -436,6 +438,7 @@ static int prepare_repo_cmd(struct cgit_context *ctx)
 		cgit_print_docstart(ctx);
 		cgit_print_pageheader(ctx);
 		cgit_print_error("Repository seems to be empty");
+		cgit_print_cloneurl(ctx);
 		cgit_print_docend();
 		return 1;
 	}

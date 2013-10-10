@@ -15,6 +15,18 @@
 
 int urls = 0;
 
+static int is_sshurl(char *url)
+{
+	char *c;
+
+	for(c = url; *c; c++) {
+		if (*c == ':')
+			return 0;
+	}
+
+	return 1;
+}
+
 static void print_url(char *base, char *suffix)
 {
 	if (!base || !*base)
@@ -23,8 +35,12 @@ static void print_url(char *base, char *suffix)
 		html("<tr class='nohover'><td colspan='4'>&nbsp;</td></tr>");
 		html("<tr><th class='left' colspan='4'>Clone</th></tr>\n");
 	}
-	if (suffix && *suffix)
-		base = fmt("%s/%s", base, suffix);
+	if (suffix && *suffix) {
+		if (is_sshurl(base))
+			base = fmt("%s:%s", base, suffix);
+		else
+			base = fmt("%s/%s", base, suffix);
+	}
 	html("<tr><td colspan='4'><a href='");
 	html_url_path(base);
 	html("'>");
@@ -48,6 +64,15 @@ static void print_urls(char *txt, char *suffix)
 		*t = c;
 		h = t;
 	}
+}
+
+void cgit_print_cloneurl(struct cgit_context *ctx)
+{
+
+	html("<table summary='repository info' class='list nowrap'>");
+        if (ctx->cfg.clone_prefix)
+                print_urls(ctx->cfg.clone_prefix, ctx->repo->url);
+	html("</table>");
 }
 
 void cgit_print_summary()
